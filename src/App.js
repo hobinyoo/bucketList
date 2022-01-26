@@ -1,71 +1,109 @@
-import './App.css';
+import { Route, Routes } from "react-router-dom";
+import React from "react";
+// BucketList 컴포넌트를 import 해옵니다.
+// import [컴포넌트 명] from [컴포넌트가 있는 파일경로];
+import BucketList from "./BucketList";
+import styled from "styled-components";
+import Detail from "./detail";
+import {useDispatch} from "react-redux";
+import {createBucket, loadBucketFB, addBucketFB} from "./redux/modules/bucket"
+import Progress from "./Progress";
+// import {db} from "./firebase"
+
 
 function App() {
+  
+  
+  const text = React.useRef(null);
+  
+  const dispatch = useDispatch();
+  
+  React.useEffect(() => {
+    dispatch(loadBucketFB());
+  }, [])
+
+  const addBucketList = () => {
+    dispatch(addBucketFB({text: text.current.value, completed: false}));
+    // dispatch(createBucket({text: text.current.value, completed: false}));
+  };
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <img
-          src="https://media3.giphy.com/media/13CoXDiaCcCoyk/giphy.gif?cid=ecf05e47mkcj61h3gjm3wjb2p4a067eiutl03vig47jsrksp&rid=giphy.gif&ct=g"
-          className="App-logo"
-          alt="cat shoulder shake"
-        />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn <span style={{ textDecoration: 'line-through' }}>Recat</span>{' '}
-          React
-        </a>
-      </header>
-      <main>
-        <p>
-          You probably meant to run <code>npx create-react-app</code> instead of{' '}
-          <code>npx create-recat-app</code>, but we're all here now and you
-          might as well enjoy some cats while you're at it.
-        </p>
-        <p className="images">
-          <img
-            src="https://media4.giphy.com/media/ICOgUNjpvO0PC/giphy.gif?cid=790b76118fbd3d2f0a35e8ff4036a66280840c2540f58474&rid=giphy.gif&ct=g"
-            alt="cat waving"
-          />
-          <img
-            src="https://media2.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif?cid=790b7611a46365babee79d6ce8d46d72eed5122eee0e6ef0&rid=giphy.gif&ct=g"
-            alt="cat developer"
-          />
-          <img
-            src="https://media3.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif?cid=790b7611e3ce0fc616ae6fb98d342b0b8131d965c75fac1b&rid=giphy.gif&ct=g"
-            alt="cat fast typing"
-          />
-          <img
-            src="https://media3.giphy.com/media/12PA1eI8FBqEBa/giphy.gif?cid=790b7611dfb7917b89f875b566ebedb7dc44135253c05172&rid=giphy.gif&ct=g"
-            alt="cat with chicks"
-          />
-          <img
-            src="https://media1.giphy.com/media/krZUvydC7Qrdu/giphy.gif?cid=790b7611c21df70db966c73cf4817e5bd79d5b4711ddc9f9&rid=giphy.gif&ct=g"
-            alt="cat riding ram"
-          />
-          <img
-            src="https://media3.giphy.com/media/10dU7AN7xsi1I4/giphy.gif?cid=790b7611a97153a9f993c7fc252257c0bb66399df74945ab&rid=giphy.gif&ct=g"
-            alt="cat all for one"
-          />
-          <img
-            src="https://media1.giphy.com/media/17Q92poP1qJwI/giphy.gif?cid=790b7611400844530bf6fe0debc6685cbcd4fff4ce6fd067&rid=giphy.gif&ct=g"
-            alt="cat teddy bear"
-          />
-        </p>
-        <p>
-          If you like tools that save you the pain of managing a build system,
-          check out Nx at{' '}
-          <a href="https://nx.dev/react">https://nx.dev/react</a>.
-        </p>
-      </main>
+      <Container>
+        <Title>내 버킷리스트</Title>
+        <Progress/>
+        <Line />
+        {/* 컴포넌트를 넣어줍니다. */}
+        {/* <컴포넌트 명 [props 명]={넘겨줄 것(리스트, 문자열, 숫자, ...)}/> */}
+
+        <Routes>
+          <Route path="/" element={<BucketList />} />
+          <Route path="/detail:index" element={<Detail />} />
+        </Routes>
+
+      </Container>
+      {/* 인풋박스와 추가하기 버튼을 넣어줬어요. */}
+      <Input>
+        <input type="text" ref={text} />
+        <button onClick={addBucketList}>추가하기</button>
+      </Input>
+      <button onClick={() => {
+        window.scrollTo({top:0, left:0, behavior: "smooth"});
+      }}>위로 가기</button>
     </div>
   );
 }
+
+const Input = styled.div`
+  max-width: 350px;
+  min-height: 10vh;
+  background-color: #fff;
+  padding: 16px;
+  margin: 20px auto;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  display: flex;
+  & > * {
+    padding : 5px;
+  }
+
+  & input{
+    border: 1px solid #888;
+    width: 70%;
+    margin-right: 10px;
+  }
+
+  & input:focus {
+    border: 1px solid #a673ff;
+    outline: none;
+  }
+  
+  & button {
+    width: 25%;
+    color: #fff;
+    border: #a673ff;
+    background: #a673ff;
+  }
+`;
+
+const Container = styled.div`
+  max-width: 350px;
+  min-height: 60vh;
+  background-color: #fff;
+  padding: 16px;
+  margin: 20px auto;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+`;
+
+const Title = styled.h1`
+  color: slateblue;
+  text-align: center;
+`;
+
+const Line = styled.hr`
+  margin: 16px 0px;
+  border: 1px dotted #ddd;
+`;
 
 export default App;
